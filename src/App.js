@@ -9,7 +9,7 @@ function App() {
 
   // 컴포넌트 마운트 시 API 호출
   useEffect(() => {
-    fetch('http://localhost:8080/api/codes/groups')
+    fetch('/api/codes/groups')
         .then((response) => response.json())
         .then((data) => {
           setGroups(data);
