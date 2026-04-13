@@ -1,26 +1,43 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 
 const API_BASE = window.location.hostname === 'localhost'
     ? 'http://localhost:8080'
     : '';
 
+// 구역 목록
+const AREAS = [
+    { cd: '', nm: '전체' },
+    { cd: 'A01', nm: 'A' },
+    { cd: 'A02', nm: 'B' },
+    { cd: 'A03', nm: 'C' },
+    { cd: 'A04', nm: 'D' },
+    { cd: 'A05', nm: 'E' },
+    { cd: 'A06', nm: 'F' },
+    { cd: 'A07', nm: 'G' },
+    { cd: 'A08', nm: 'H' },
+];
+
 function App() {
     const [selectedShop, setSelectedShop] = useState(null);
+    const [selectedArea, setSelectedArea] = useState('');
     const [uploadResult, setUploadResult] = useState(null);
 
     // 식당 랜덤 선택
     const handleSelectShop = async () => {
         try {
-            const response = await fetch(API_BASE + '/api/shops');
+            const url = selectedArea
+                ? API_BASE + '/api/shops?areaCd=' + selectedArea
+                : API_BASE + '/api/shops';
+
+            const response = await fetch(url);
             const data = await response.json();
 
             if (data.length === 0) {
-                alert('등록된 가게가 없습니다!');
+                alert('해당 구역에 등록된 가게가 없습니다!');
                 return;
             }
 
-            // 랜덤으로 하나 선택
             const randomIndex = Math.floor(Math.random() * data.length);
             setSelectedShop(data[randomIndex]);
         } catch (error) {
@@ -54,8 +71,8 @@ function App() {
     };
 
     return (
-        <div className="App" style={{ textAlign: 'center', paddingTop: '100px' }}>
-            <h1>🍚 react,java로 만드는 밥밥</h1>
+        <div className="App" style={{ textAlign: 'center', paddingTop: '60px' }}>
+            <h1>🍚java,react로 변경중</h1>
 
             {/* 선택된 가게 표시 */}
             <div style={{ margin: '40px auto', fontSize: '36px', fontWeight: 'bold', minHeight: '50px' }}>
@@ -63,6 +80,31 @@ function App() {
                     ? `${selectedShop.shopNm}${selectedShop.rmk ? '(' + selectedShop.rmk + ')' : ''}`
                     : '버튼을 눌러주세요!'
                 }
+            </div>
+
+            {/* 구역 선택 버튼들 */}
+            <div style={{ margin: '20px auto', maxWidth: '500px' }}>
+                {AREAS.map((area) => (
+                    <button
+                        key={area.cd}
+                        onClick={() => {
+                            setSelectedArea(area.cd);
+                            setSelectedShop(null);
+                        }}
+                        style={{
+                            padding: '10px 18px',
+                            margin: '5px',
+                            fontSize: '16px',
+                            backgroundColor: selectedArea === area.cd ? '#4472C4' : '#e0e0e0',
+                            color: selectedArea === area.cd ? 'white' : '#333',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        {area.nm}
+                    </button>
+                ))}
             </div>
 
             {/* 식당 선택 버튼 */}
@@ -76,7 +118,7 @@ function App() {
                     border: 'none',
                     borderRadius: '10px',
                     cursor: 'pointer',
-                    marginBottom: '40px'
+                    marginBottom: '40px',
                 }}
             >
                 🎲 식당 선택!
