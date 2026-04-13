@@ -17,19 +17,6 @@ const AREAS = [
     { cd: 'A08', nm: 'H' },
 ];
 
-// 구역별 기본 좌표 (나중에 실제 좌표로 변경)
-const AREA_CENTER = {
-    '': { lat: 37.5636, lng: 126.9745 },
-    'A01': { lat: 37.5636, lng: 126.9745 },
-    'A02': { lat: 37.5640, lng: 126.9750 },
-    'A03': { lat: 37.5630, lng: 126.9740 },
-    'A04': { lat: 37.5635, lng: 126.9755 },
-    'A05': { lat: 37.5645, lng: 126.9735 },
-    'A06': { lat: 37.5625, lng: 126.9760 },
-    'A07': { lat: 37.5650, lng: 126.9730 },
-    'A08': { lat: 37.5620, lng: 126.9765 },
-};
-
 function App() {
     const [selectedShop, setSelectedShop] = useState(null);
     const [selectedArea, setSelectedArea] = useState('');
@@ -37,44 +24,49 @@ function App() {
     const mapRef = useRef(null);
     const mapInstance = useRef(null);
     const markerRef = useRef(null);
+    const infoRef = useRef(null);
 
-    // 카카오 지도 초기화
+    // 카카오 지도 초기화 (세종대로 39 기본 중심)
     useEffect(() => {
         const kakao = window.kakao;
         if (kakao && kakao.maps) {
             const container = mapRef.current;
             const options = {
-                center: new kakao.maps.LatLng(37.5636, 126.9745),
+                center: new kakao.maps.LatLng(37.5607, 126.9738),
                 level: 4,
             };
             mapInstance.current = new kakao.maps.Map(container, options);
         }
     }, []);
 
-    // 식당 선택 시 지도 이동
+    // 식당 선택 시 지도에 마커 표시
     useEffect(() => {
         const kakao = window.kakao;
         if (!kakao || !mapInstance.current || !selectedShop) return;
+        if (!selectedShop.latitude || !selectedShop.longitude) return;
 
-        // 구역 좌표로 이동 (나중에 가게별 좌표로 변경 가능)
-        const center = AREA_CENTER[selectedShop.areaCd] || AREA_CENTER[''];
-        const moveLatLng = new kakao.maps.LatLng(center.lat, center.lng);
+        const moveLatLng = new kakao.maps.LatLng(selectedShop.latitude, selectedShop.longitude);
         mapInstance.current.setCenter(moveLatLng);
 
-        // 마커 표시
-        if (markerRef.current) {
-            markerRef.current.setMap(null);
-        }
+        // 기존 마커 제거
+        if (markerRef.current) markerRef.current.setMap(null);
+        if (infoRef.current) infoRef.current.close();
+
+        // 새 마커
         markerRef.current = new kakao.maps.Marker({
             position: moveLatLng,
             map: mapInstance.current,
         });
 
         // 인포윈도우
-        const infowindow = new kakao.maps.InfoWindow({
-            content: `<div style="padding:5px;font-size:14px;">${selectedShop.shopNm}</div>`,
+        const displayName = selectedShop.rmk
+            ? selectedShop.shopNm + '(' + selectedShop.rmk + ')'
+            : selectedShop.shopNm;
+
+        infoRef.current = new kakao.maps.InfoWindow({
+            content: '<div style="padding:5px;font-size:14px;white-space:nowrap;">' + displayName + '</div>',
         });
-        infowindow.open(mapInstance.current, markerRef.current);
+        infoRef.current.open(mapInstance.current, markerRef.current);
     }, [selectedShop]);
 
     // 식당 랜덤 선택
