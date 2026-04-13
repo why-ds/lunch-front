@@ -55,7 +55,7 @@ function App() {
 
     return (
         <div className="App" style={{ textAlign: 'center', paddingTop: '100px' }}>
-            <h1>🍚 react,java로 만드는 밥밥</h1>
+            <h1>🍚 점심 뭐 먹지?</h1>
 
             {/* 선택된 가게 표시 */}
             <div style={{ margin: '40px auto', fontSize: '36px', fontWeight: 'bold', minHeight: '50px' }}>
