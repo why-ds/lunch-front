@@ -5,26 +5,41 @@ const API_BASE = window.location.hostname === 'localhost'
     ? 'http://localhost:8080'
     : '';
 
-const AREAS = [
-    { cd: '', nm: '전체' },
-    { cd: 'A01', nm: 'A' },
-    { cd: 'A02', nm: 'B' },
-    { cd: 'A03', nm: 'C' },
-    { cd: 'A04', nm: 'D' },
-    { cd: 'A05', nm: 'E' },
-    { cd: 'A06', nm: 'F' },
-    { cd: 'A07', nm: 'G' },
-    { cd: 'A08', nm: 'H' },
-];
-
 function App() {
     const [selectedShop, setSelectedShop] = useState(null);
-    const [selectedArea, setSelectedArea] = useState('');
     const [uploadResult, setUploadResult] = useState(null);
+
+    // 새로 추가된 호선/역명 필터 State
+    const [lines, setLines] = useState([]);
+    const [stations, setStations] = useState([]);
+    const [selectedLine, setSelectedLine] = useState('');
+    const [selectedStationCd, setSelectedStationCd] = useState('');
+
     const mapRef = useRef(null);
     const mapInstance = useRef(null);
     const markerRef = useRef(null);
     const infoRef = useRef(null);
+
+    // 공통코드 조회 (호선 데이터 로드)
+    useEffect(() => {
+        fetch(API_BASE + '/api/codes/details?grpCd=SUBWAY_LINE')
+            .then(res => res.json())
+            .then(data => setLines(data))
+            .catch(err => console.error('호선 데이터를 불러오는데 실패했습니다.', err));
+    }, []);
+
+    // 호선이 변경될 때 역 데이터 로드
+    useEffect(() => {
+        if (selectedLine) {
+            fetch(API_BASE + `/api/codes/details?grpCd=${selectedLine}`)
+                .then(res => res.json())
+                .then(data => setStations(data))
+                .catch(err => console.error('역 데이터를 불러오는데 실패했습니다.', err));
+        } else {
+            setStations([]);
+            setSelectedStationCd('');
+        }
+    }, [selectedLine]);
 
     // 카카오 지도 초기화 (세종대로 39 기본 중심)
     useEffect(() => {
@@ -72,15 +87,16 @@ function App() {
     // 식당 랜덤 선택
     const handleSelectShop = async () => {
         try {
-            const url = selectedArea
-                ? API_BASE + '/api/shops?areaCd=' + selectedArea
+            // 역 코드가 있으면 파라미터 추가, 없으면 전체 조회
+            const url = selectedStationCd
+                ? API_BASE + '/api/shops?stationCd=' + selectedStationCd
                 : API_BASE + '/api/shops';
 
             const response = await fetch(url);
             const data = await response.json();
 
             if (data.length === 0) {
-                alert('해당 구역에 등록된 가게가 없습니다!');
+                alert('해당 역에 등록된 가게가 없습니다!');
                 return;
             }
 
@@ -118,7 +134,7 @@ function App() {
 
     return (
         <div className="App" style={{ textAlign: 'center', paddingTop: '30px' }}>
-            <h1>🍚 점심 뭐 먹지?</h1>
+            <h1>🍚</h1>
 
             {/* 카카오 지도 */}
             <div
@@ -141,29 +157,56 @@ function App() {
                 }
             </div>
 
-            {/* 구역 선택 버튼들 */}
-            <div style={{ margin: '15px auto', maxWidth: '500px' }}>
-                {AREAS.map((area) => (
-                    <button
-                        key={area.cd}
-                        onClick={() => {
-                            setSelectedArea(area.cd);
-                            setSelectedShop(null);
-                        }}
-                        style={{
-                            padding: '10px 18px',
-                            margin: '5px',
-                            fontSize: '16px',
-                            backgroundColor: selectedArea === area.cd ? '#4472C4' : '#e0e0e0',
-                            color: selectedArea === area.cd ? 'white' : '#333',
-                            border: 'none',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                        }}
-                    >
-                        {area.nm}
-                    </button>
-                ))}
+            {/* 호선 및 역명 선택 필터 */}
+            <div style={{ margin: '15px auto', maxWidth: '500px', display: 'flex', justifyContent: 'center', gap: '15px' }}>
+                <select
+                    value={selectedLine}
+                    onChange={(e) => {
+                        setSelectedLine(e.target.value);
+                        setSelectedStationCd(''); // 호선이 바뀌면 역명 초기화
+                        setSelectedShop(null); // 식당 정보 초기화
+                    }}
+                    style={{
+                        padding: '10px 15px',
+                        fontSize: '16px',
+                        borderRadius: '8px',
+                        border: '1px solid #ccc',
+                        outline: 'none',
+                        cursor: 'pointer'
+                    }}
+                >
+                    <option value="">호선 전체</option>
+                    {lines.map((line) => (
+                        <option key={line.dtlCd} value={line.dtlCd}>
+                            {line.dtlNm}
+                        </option>
+                    ))}
+                </select>
+
+                <select
+                    value={selectedStationCd}
+                    onChange={(e) => {
+                        setSelectedStationCd(e.target.value);
+                        setSelectedShop(null); // 식당 정보 초기화
+                    }}
+                    disabled={!selectedLine}
+                    style={{
+                        padding: '10px 15px',
+                        fontSize: '16px',
+                        borderRadius: '8px',
+                        border: '1px solid #ccc',
+                        outline: 'none',
+                        cursor: selectedLine ? 'pointer' : 'not-allowed',
+                        backgroundColor: selectedLine ? 'white' : '#f5f5f5'
+                    }}
+                >
+                    <option value="">역명 전체</option>
+                    {stations.map((station) => (
+                        <option key={station.dtlCd} value={station.dtlCd}>
+                            {station.dtlNm}
+                        </option>
+                    ))}
+                </select>
             </div>
 
             {/* 식당 선택 버튼 */}
