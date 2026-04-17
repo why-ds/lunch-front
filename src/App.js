@@ -7,7 +7,6 @@ const API_BASE = window.location.hostname === 'localhost'
 
 function App() {
     const [selectedShop, setSelectedShop] = useState(null);
-    const [uploadResult, setUploadResult] = useState(null);
 
     // 지하철 필터 상태
     const [lines, setLines] = useState([]);
@@ -26,8 +25,6 @@ function App() {
     const mapInstance = useRef(null);
     const markerRef = useRef(null);
     const infoRef = useRef(null);
-
-    const [landmarkResult, setLandmarkResult] = useState(null);
 
     // 호선 로드
     useEffect(() => {
