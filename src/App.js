@@ -258,8 +258,8 @@ function App() {
                 <h3>🏢 랜드마크 엑셀 업로드</h3>
                 <input type="file" accept=".xlsx" onChange={handleLandmarkUpload} />
                 {landmarkResult && <p style={{ marginTop: '10px', color: landmarkResult.success ? 'green' : 'red' }}>{landmarkResult.message}</p>}
-            </div>
-        </div>*/}
+            </div>*/}
+        </div>
     );
 }
 
