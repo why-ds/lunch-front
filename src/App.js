@@ -137,38 +137,6 @@ function App() {
         setSelectedLandmark(null);
     };
 
-    /*const handleFileUpload = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const formData = new FormData();
-        formData.append('file', file);
-        try {
-            const response = await fetch(`${API_BASE}/api/shops/upload`, { method: 'POST', body: formData });
-            const result = await response.json();
-            setUploadResult(result);
-            alert(result.message);
-        } catch (error) {
-            alert('업로드 실패');
-        }
-        e.target.value = '';
-    };
-
-    const handleLandmarkUpload = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const formData = new FormData();
-        formData.append('file', file);
-        try {
-            const response = await fetch(API_BASE + '/api/landmarks/upload', { method: 'POST', body: formData });
-            const result = await response.json();
-            setLandmarkResult(result);
-            alert(result.message);
-        } catch (error) {
-            alert('랜드마크 업로드 실패');
-        }
-        e.target.value = '';
-    };*/
-
     return (
         <div className="App" style={{ textAlign: 'center', paddingTop: '30px' }}>
             <h1>🍚</h1>
