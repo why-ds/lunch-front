@@ -20,6 +20,8 @@ function App() {
     const markerRef = useRef(null);
     const infoRef = useRef(null);
 
+    const [landmarkResult, setLandmarkResult] = useState(null);
+
     // 호선 로드
     useEffect(() => {
         fetch(`${API_BASE}/api/subway-stations/lines`)
@@ -119,9 +121,33 @@ function App() {
         e.target.value = '';
     };
 
+    // 랜드마크 엑셀 업로드
+    const handleLandmarkUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await fetch(API_BASE + '/api/landmarks/upload', {
+                method: 'POST',
+                body: formData,
+            });
+            const result = await response.json();
+            setLandmarkResult(result);
+            alert(result.message);
+        } catch (error) {
+            console.error('업로드 실패:', error);
+            alert('랜드마크 업로드에 실패했습니다.');
+        }
+
+        e.target.value = '';
+    };
+
     return (
         <div className="App" style={{ textAlign: 'center', paddingTop: '30px' }}>
-            <h1>🍚 점심 뭐 먹지?</h1>
+            <h1>🍚</h1>
             <div ref={mapRef} style={{ width: '90%', maxWidth: '600px', height: '350px', margin: '20px auto', borderRadius: '12px', border: '2px solid #ddd' }} />
 
             <div style={{ margin: '20px auto', fontSize: '32px', fontWeight: 'bold', minHeight: '45px' }}>
@@ -148,6 +174,20 @@ function App() {
                 <h3>📂 가게 엑셀 업로드</h3>
                 <input type="file" accept=".xlsx" onChange={handleFileUpload} />
                 {uploadResult && <p style={{ marginTop: '10px', color: uploadResult.success ? 'green' : 'red' }}>{uploadResult.message}</p>}
+            </div>
+            {/* 랜드마크 엑셀 업로드 영역 */}
+            <div style={{ margin: '20px auto', padding: '20px', border: '2px dashed #E67E22', width: '400px' }}>
+                <h3>🏢 랜드마크 엑셀 업로드</h3>
+                <input
+                    type="file"
+                    accept=".xlsx"
+                    onChange={handleLandmarkUpload}
+                />
+                {landmarkResult && (
+                    <p style={{ marginTop: '10px', color: landmarkResult.success ? 'green' : 'red' }}>
+                        {landmarkResult.message}
+                    </p>
+                )}
             </div>
         </div>
     );
