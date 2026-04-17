@@ -134,7 +134,7 @@ function App() {
 
     return (
         <div className="App" style={{ textAlign: 'center', paddingTop: '30px' }}>
-            <h1>🍚</h1>
+            <h1>🍚 점심 뭐 먹지?</h1>
 
             {/* 카카오 지도 */}
             <div
