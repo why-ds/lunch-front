@@ -1,200 +1,134 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
-const API_BASE = window.location.hostname === 'localhost'
-    ? 'http://localhost:8080'
-    : '';
-
-const AREAS = [
-    { cd: '', nm: '전체' },
-    { cd: 'A01', nm: 'A' },
-    { cd: 'A02', nm: 'B' },
-    { cd: 'A03', nm: 'C' },
-    { cd: 'A04', nm: 'D' },
-    { cd: 'A05', nm: 'E' },
-    { cd: 'A06', nm: 'F' },
-    { cd: 'A07', nm: 'G' },
-    { cd: 'A08', nm: 'H' },
-];
-
 function App() {
-    const [selectedShop, setSelectedShop] = useState(null);
-    const [selectedArea, setSelectedArea] = useState('');
-    const [uploadResult, setUploadResult] = useState(null);
-    const mapRef = useRef(null);
-    const mapInstance = useRef(null);
-    const markerRef = useRef(null);
-    const infoRef = useRef(null);
+    // 1. 공통코드 데이터를 담을 State
+    const [lines, setLines] = useState([]);       // 호선 리스트 (대분류)
+    const [stations, setStations] = useState([]); // 역 리스트 (중분류)
 
-    // 카카오 지도 초기화 (세종대로 39 기본 중심)
+    // 2. 사용자가 선택한 값을 담을 State
+    const [selectedLine, setSelectedLine] = useState('');
+    const [selectedStationCd, setSelectedStationCd] = useState('');
+
+    // 3. 검색 결과 데이터를 담을 State
+    const [shops, setShops] = useState([]);
+
+    /**
+     * 컴포넌트 최초 마운트 시, '호선' 리스트를 백엔드에서 가져옵니다.
+     * 그룹코드 'SUBWAY_LINE'은 실제 DB에 등록된 호선 그룹 코드로 맞춰주세요.
+     */
     useEffect(() => {
-        const kakao = window.kakao;
-        if (kakao && kakao.maps) {
-            const container = mapRef.current;
-            const options = {
-                center: new kakao.maps.LatLng(37.5607, 126.9738),
-                level: 4,
-            };
-            mapInstance.current = new kakao.maps.Map(container, options);
-        }
+        fetch('/api/codes/details?grpCd=SUBWAY_LINE')
+            .then(res => {
+                if (!res.ok) throw new Error('호선 데이터를 불러오는데 실패했습니다.');
+                return res.json();
+            })
+            .then(data => setLines(data))
+            .catch(err => console.error(err));
     }, []);
 
-    // 식당 선택 시 지도에 마커 표시
+    /**
+     * selectedLine(호선) State가 변경될 때마다 실행됩니다.
+     * 선택된 호선 코드를 기반으로 해당하는 역 목록을 백엔드에서 가져옵니다.
+     */
     useEffect(() => {
-        const kakao = window.kakao;
-        if (!kakao || !mapInstance.current || !selectedShop) return;
-        if (!selectedShop.latitude || !selectedShop.longitude) return;
+        if (selectedLine) {
+            // 선택된 호선 코드가 있다면 API 호출 (예: 1호선 선택시 grpCd='LINE_1' 등)
+            // *주의: DB에 역 목록이 어떤 그룹코드로 묶여있는지 확인 후 템플릿 리터럴을 맞추세요.
+            fetch(`/api/codes/details?grpCd=${selectedLine}`)
+                .then(res => {
+                    if (!res.ok) throw new Error('역 데이터를 불러오는데 실패했습니다.');
+                    return res.json();
+                })
+                .then(data => setStations(data))
+                .catch(err => console.error(err));
+        } else {
+            // 호선 선택이 해제된 경우: 하위 데이터(역 목록 및 선택된 역) 초기화
+            setStations([]);
+            setSelectedStationCd('');
+        }
+    }, [selectedLine]);
 
-        const moveLatLng = new kakao.maps.LatLng(selectedShop.latitude, selectedShop.longitude);
-        mapInstance.current.setCenter(moveLatLng);
-
-        // 기존 마커 제거
-        if (markerRef.current) markerRef.current.setMap(null);
-        if (infoRef.current) infoRef.current.close();
-
-        // 새 마커
-        markerRef.current = new kakao.maps.Marker({
-            position: moveLatLng,
-            map: mapInstance.current,
-        });
-
-        // 인포윈도우
-        const displayName = selectedShop.rmk
-            ? selectedShop.shopNm + '(' + selectedShop.rmk + ')'
-            : selectedShop.shopNm;
-
-        infoRef.current = new kakao.maps.InfoWindow({
-            content: '<div style="padding:5px;font-size:14px;white-space:nowrap;">' + displayName + '</div>',
-        });
-        infoRef.current.open(mapInstance.current, markerRef.current);
-    }, [selectedShop]);
-
-    // 식당 랜덤 선택
-    const handleSelectShop = async () => {
+    /**
+     * 식당 리스트를 조회하는 검색 함수
+     */
+    const fetchShops = async () => {
         try {
-            const url = selectedArea
-                ? API_BASE + '/api/shops?areaCd=' + selectedArea
-                : API_BASE + '/api/shops';
+            // 선택된 역이 있으면 파라미터 추가, 없으면 전체 검색
+            const url = selectedStationCd
+                ? `/api/shops?stationCd=${selectedStationCd}`
+                : `/api/shops`;
 
             const response = await fetch(url);
-            const data = await response.json();
-
-            if (data.length === 0) {
-                alert('해당 구역에 등록된 가게가 없습니다!');
-                return;
+            if (!response.ok) {
+                throw new Error(`API 통신 에러: ${response.status}`);
             }
 
-            const randomIndex = Math.floor(Math.random() * data.length);
-            setSelectedShop(data[randomIndex]);
+            const data = await response.json();
+            setShops(data);
         } catch (error) {
-            console.error('API 호출 실패:', error);
-            alert('가게 정보를 불러올 수 없습니다.');
+            console.error("데이터 조회 중 오류 발생:", error);
+            alert('데이터를 가져오는 중 문제가 발생했습니다.');
         }
-    };
-
-    // 엑셀 업로드
-    const handleFileUpload = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const formData = new FormData();
-        formData.append('file', file);
-
-        try {
-            const response = await fetch(API_BASE + '/api/shops/upload', {
-                method: 'POST',
-                body: formData,
-            });
-            const result = await response.json();
-            setUploadResult(result);
-            alert(result.message);
-        } catch (error) {
-            console.error('업로드 실패:', error);
-            alert('업로드에 실패했습니다.');
-        }
-
-        e.target.value = '';
     };
 
     return (
-        <div className="App" style={{ textAlign: 'center', paddingTop: '30px' }}>
-            <h1>🍚 점심 뭐 먹지?</h1>
+        <div className="App">
+            <div className="filter-container">
+                {/* 호선 선택 필터 */}
+                <select
+                    value={selectedLine}
+                    onChange={(e) => {
+                        setSelectedLine(e.target.value);
+                        // 호선이 변경되면 기존에 선택된 역명은 유효하지 않으므로 무조건 빈값으로 초기화해야 합니다.
+                        setSelectedStationCd('');
+                    }}
+                >
+                    <option value="">호선 선택</option>
+                    {lines.map((line) => (
+                        <option key={line.dtlCd} value={line.dtlCd}>
+                            {line.dtlNm}
+                        </option>
+                    ))}
+                </select>
 
-            {/* 카카오 지도 */}
-            <div
-                ref={mapRef}
-                style={{
-                    width: '90%',
-                    maxWidth: '600px',
-                    height: '350px',
-                    margin: '20px auto',
-                    borderRadius: '12px',
-                    border: '2px solid #ddd',
-                }}
-            />
+                {/* 역명 선택 필터 (상위 셀렉트박스인 호선이 선택되어야만 활성화 됨) */}
+                <select
+                    value={selectedStationCd}
+                    onChange={(e) => setSelectedStationCd(e.target.value)}
+                    disabled={!selectedLine}
+                >
+                    <option value="">역명 선택</option>
+                    {stations.map((station) => (
+                        <option key={station.dtlCd} value={station.dtlCd}>
+                            {station.dtlNm}
+                        </option>
+                    ))}
+                </select>
 
-            {/* 선택된 가게 표시 */}
-            <div style={{ margin: '20px auto', fontSize: '32px', fontWeight: 'bold', minHeight: '45px' }}>
-                {selectedShop
-                    ? `${selectedShop.shopNm}${selectedShop.rmk ? '(' + selectedShop.rmk + ')' : ''}`
-                    : '버튼을 눌러주세요!'
-                }
+                <button onClick={fetchShops}>조회</button>
             </div>
 
-            {/* 구역 선택 버튼들 */}
-            <div style={{ margin: '15px auto', maxWidth: '500px' }}>
-                {AREAS.map((area) => (
-                    <button
-                        key={area.cd}
-                        onClick={() => {
-                            setSelectedArea(area.cd);
-                            setSelectedShop(null);
-                        }}
-                        style={{
-                            padding: '10px 18px',
-                            margin: '5px',
-                            fontSize: '16px',
-                            backgroundColor: selectedArea === area.cd ? '#4472C4' : '#e0e0e0',
-                            color: selectedArea === area.cd ? 'white' : '#333',
-                            border: 'none',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                        }}
-                    >
-                        {area.nm}
-                    </button>
-                ))}
-            </div>
+            <hr />
 
-            {/* 식당 선택 버튼 */}
-            <button
-                onClick={handleSelectShop}
-                style={{
-                    padding: '15px 40px',
-                    fontSize: '20px',
-                    backgroundColor: '#4472C4',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '10px',
-                    cursor: 'pointer',
-                    marginBottom: '30px',
-                }}
-            >
-                🎲 식당 선택!
-            </button>
-
-            {/* 엑셀 업로드 영역 */}
-            <div style={{ margin: '20px auto', padding: '20px', border: '2px dashed #ccc', width: '400px' }}>
-                <h3>📂 가게 엑셀 업로드</h3>
-                <input
-                    type="file"
-                    accept=".xlsx"
-                    onChange={handleFileUpload}
-                />
-                {uploadResult && (
-                    <p style={{ marginTop: '10px', color: uploadResult.success ? 'green' : 'red' }}>
-                        {uploadResult.message}
-                    </p>
+            {/* 식당 리스트 렌더링 */}
+            <div className="shop-list">
+                {shops.length > 0 ? (
+                    shops.map(shop => (
+                        // shopSeq가 PK이므로 key값으로 사용 (Double 타입인 위도/경도 등은 화면에 표시할때만 사용)
+                        <div key={shop.shopSeq} className="shop-item">
+                            <h3>{shop.shopNm}</h3>
+                            <p>주소: {shop.address}</p>
+                            {/* 위도, 경도는 DB에서 Double 타입이므로 null 체크 후 출력 */}
+                            {(shop.latitude && shop.longitude) && (
+                                <p style={{fontSize: '12px', color: 'gray'}}>
+                                    위치: {shop.latitude}, {shop.longitude}
+                                </p>
+                            )}
+                        </div>
+                    ))
+                ) : (
+                    <p>검색 결과가 없습니다.</p>
                 )}
             </div>
         </div>
