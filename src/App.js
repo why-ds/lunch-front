@@ -137,7 +137,7 @@ function App() {
         setSelectedLandmark(null);
     };
 
-    const handleFileUpload = async (e) => {
+    /*const handleFileUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
         const formData = new FormData();
@@ -167,7 +167,7 @@ function App() {
             alert('랜드마크 업로드 실패');
         }
         e.target.value = '';
-    };
+    };*/
 
     return (
         <div className="App" style={{ textAlign: 'center', paddingTop: '30px' }}>
