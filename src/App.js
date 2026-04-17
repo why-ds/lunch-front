@@ -244,8 +244,11 @@ function App() {
             }}>
                 🎲 식당 선택!
             </button>
-
-            <div style={{ margin: '20px auto', padding: '20px', border: '2px dashed #ccc', width: '400px' }}>
+            {/* 관리자 링크 */}
+            <div style={{ marginTop: '30px', paddingBottom: '30px' }}>
+                <a href="/login" style={{ color: '#999', fontSize: '14px' }}>관리자 로그인</a>
+            </div>
+            {/*<div style={{ margin: '20px auto', padding: '20px', border: '2px dashed #ccc', width: '400px' }}>
                 <h3>📂 가게 엑셀 업로드</h3>
                 <input type="file" accept=".xlsx" onChange={handleFileUpload} />
                 {uploadResult && <p style={{ marginTop: '10px', color: uploadResult.success ? 'green' : 'red' }}>{uploadResult.message}</p>}
@@ -256,7 +259,7 @@ function App() {
                 <input type="file" accept=".xlsx" onChange={handleLandmarkUpload} />
                 {landmarkResult && <p style={{ marginTop: '10px', color: landmarkResult.success ? 'green' : 'red' }}>{landmarkResult.message}</p>}
             </div>
-        </div>
+        </div>*/}
     );
 }
 
