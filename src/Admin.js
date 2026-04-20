@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const API_BASE = window.location.hostname === 'localhost'
     ? 'http://localhost:8080'
-    : 'http://yds.it';
+    : '';
 
 function Admin() {
     const [uploadResult, setUploadResult] = useState(null);
