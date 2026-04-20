@@ -25,6 +25,47 @@ function App() {
     const mapInstance = useRef(null);
     const markerRef = useRef(null);
     const infoRef = useRef(null);
+    // 랜드마크 필터 상태 추가
+    const [sidos, setSidos] = useState([]);
+    const [guguns, setGuguns] = useState([]);
+    const [selectedSido, setSelectedSido] = useState('');
+    const [selectedGugun, setSelectedGugun] = useState('');
+
+// 시도 로드
+    useEffect(() => {
+        fetch(`${API_BASE}/api/landmarks/sidos`)
+            .then(res => res.json())
+            .then(data => setSidos(data))
+            .catch(err => console.error('시도 로드 실패:', err));
+    }, []);
+
+// 구군 로드
+    useEffect(() => {
+        if (selectedSido) {
+            fetch(`${API_BASE}/api/landmarks/guguns?sidoNm=${encodeURIComponent(selectedSido)}`)
+                .then(res => res.json())
+                .then(data => setGuguns(data))
+                .catch(err => console.error('구군 로드 실패:', err));
+        } else {
+            setGuguns([]);
+            setSelectedGugun('');
+            setSelectedLandmark(null);
+        }
+    }, [selectedSido]);
+
+// 랜드마크 로드 (구군 선택 시)
+    useEffect(() => {
+        if (selectedGugun) {
+            fetch(`${API_BASE}/api/landmarks/filter?gugunCd=${selectedGugun}`)
+                .then(res => res.json())
+                .then(data => setLandmarks(data))
+                .catch(err => console.error('랜드마크 로드 실패:', err));
+        } else {
+            setLandmarks([]);
+            setSelectedLandmark(null);
+        }
+    }, [selectedGugun]);
+
 
     // 호선 로드
     useEffect(() => {
@@ -134,6 +175,8 @@ function App() {
         setSelectedShop(null);
         setSelectedLine('');
         setSelectedStationCd('');
+        setSelectedSido('');
+        setSelectedGugun('');
         setSelectedLandmark(null);
     };
 
@@ -184,19 +227,22 @@ function App() {
 
             {/* 랜드마크 필터 */}
             {filterMode === 'landmark' && (
-                <div style={{ margin: '15px auto', display: 'flex', justifyContent: 'center', gap: '10px' }}>
-                    <select
-                        value={selectedLandmark ? selectedLandmark.landmarkCd : ''}
-                        onChange={(e) => {
-                            const lm = landmarks.find(l => l.landmarkCd === e.target.value);
-                            setSelectedLandmark(lm || null);
-                        }}
-                        style={{ padding: '10px', borderRadius: '8px' }}
-                    >
+                <div style={{ margin: '15px auto', display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    <select value={selectedSido} onChange={(e) => { setSelectedSido(e.target.value); setSelectedGugun(''); setSelectedLandmark(null); }}
+                            style={{ padding: '10px', borderRadius: '8px' }}>
+                        <option value="">시도 선택</option>
+                        {sidos.map((s, i) => <option key={i} value={s}>{s}</option>)}
+                    </select>
+                    <select value={selectedGugun} onChange={(e) => { setSelectedGugun(e.target.value); setSelectedLandmark(null); }}
+                            disabled={!selectedSido} style={{ padding: '10px', borderRadius: '8px' }}>
+                        <option value="">구군 선택</option>
+                        {guguns.map((g, i) => <option key={i} value={g.gugunCd}>{g.gugunNm}</option>)}
+                    </select>
+                    <select value={selectedLandmark ? selectedLandmark.landmarkCd : ''}
+                            onChange={(e) => { const lm = landmarks.find(l => l.landmarkCd === e.target.value); setSelectedLandmark(lm || null); }}
+                            disabled={!selectedGugun} style={{ padding: '10px', borderRadius: '8px' }}>
                         <option value="">랜드마크 선택</option>
-                        {landmarks.map(lm => (
-                            <option key={lm.landmarkCd} value={lm.landmarkCd}>{lm.landmarkNm}</option>
-                        ))}
+                        {landmarks.map(lm => <option key={lm.landmarkCd} value={lm.landmarkCd}>{lm.landmarkNm}</option>)}
                     </select>
                     <span style={{ padding: '10px', fontSize: '14px', color: '#666' }}>반경 500m</span>
                 </div>
