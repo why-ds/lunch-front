@@ -238,11 +238,11 @@ function App() {
                         <option value="">구군 선택</option>
                         {guguns.map((g, i) => <option key={i} value={g.gugunCd}>{g.gugunNm}</option>)}
                     </select>
-                    <select value={selectedLandmark ? selectedLandmark.landmarkCd : ''}
-                            onChange={(e) => { const lm = landmarks.find(l => l.landmarkCd === e.target.value); setSelectedLandmark(lm || null); }}
+                    <select value={selectedLandmark ? selectedLandmark.landmarkSeq : ''}
+                            onChange={(e) => { const lm = landmarks.find(l => l.landmarkSeq === parseInt(e.target.value)); setSelectedLandmark(lm || null); }}
                             disabled={!selectedGugun} style={{ padding: '10px', borderRadius: '8px' }}>
                         <option value="">랜드마크 선택</option>
-                        {landmarks.map(lm => <option key={lm.landmarkCd} value={lm.landmarkCd}>{lm.landmarkNm}</option>)}
+                        {landmarks.map(lm => <option key={lm.landmarkSeq} value={lm.landmarkSeq}>{lm.landmarkNm}</option>)}
                     </select>
                     <span style={{ padding: '10px', fontSize: '14px', color: '#666' }}>반경 500m</span>
                 </div>

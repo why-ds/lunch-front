@@ -4,7 +4,7 @@ const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:80
 
 function LandmarkRegister() {
     const token = localStorage.getItem('token');
-    const [form, setForm] = useState({ landmarkCd: '', landmarkNm: '', address: '' });
+    const [form, setForm] = useState({ landmarkNm: '', address: '' });
 
     useEffect(() => { if (!token) window.location.href = '/login'; }, [token]);
 
@@ -15,7 +15,6 @@ function LandmarkRegister() {
     };
 
     const handleSubmit = async () => {
-        if (!form.landmarkCd) { alert('랜드마크코드를 입력해주세요!'); return; }
         if (!form.landmarkNm) { alert('랜드마크명을 입력해주세요!'); return; }
         try {
             const res = await fetch(API_BASE + '/api/landmarks/single', {
@@ -25,7 +24,7 @@ function LandmarkRegister() {
             });
             const result = await res.json();
             alert(result.message);
-            if (result.success) setForm({ landmarkCd: '', landmarkNm: '', address: '' });
+            if (result.success) setForm({ landmarkNm: '', address: '' });
         } catch (e) { alert('등록 실패'); }
     };
 
@@ -34,8 +33,6 @@ function LandmarkRegister() {
     return (
         <div style={{ maxWidth: '500px', margin: '0 auto', paddingTop: '30px' }}>
             <h2>🏢 랜드마크 등록</h2>
-            <input style={inputStyle} placeholder="랜드마크코드 * (예: LM0001)" value={form.landmarkCd}
-                   onChange={(e) => setForm({...form, landmarkCd: e.target.value})} />
             <input style={inputStyle} placeholder="랜드마크명 *" value={form.landmarkNm}
                    onChange={(e) => setForm({...form, landmarkNm: e.target.value})} />
             <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
