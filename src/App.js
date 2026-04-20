@@ -182,11 +182,11 @@ function App() {
 
     return (
         <div className="App" style={{ textAlign: 'center', paddingTop: '30px' }}>
-            <h1>🍚</h1>
+            <h1>점심진짜뭐먹지🍚</h1>
             <div ref={mapRef} style={{ width: '90%', maxWidth: '600px', height: '350px', margin: '20px auto', borderRadius: '12px', border: '2px solid #ddd' }} />
 
             <div style={{ margin: '20px auto', fontSize: '32px', fontWeight: 'bold', minHeight: '45px' }}>
-                {selectedShop ? `${selectedShop.shopNm}${selectedShop.rmk ? '(' + selectedShop.rmk + ')' : ''}` : '필터를 선택하고 버튼을 눌러주세요!'}
+                {selectedShop ? `${selectedShop.shopNm}${selectedShop.rmk ? '(' + selectedShop.rmk + ')' : ''}` : '랜덤뽑기🎲'}
             </div>
 
             {/* 필터 모드 선택 */}
