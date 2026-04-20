@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8080' : '';
 
-function ShopExcelUpload() {
+function LandmarkExcelUpload() {
     const token = localStorage.getItem('token');
     const [result, setResult] = useState(null);
 
@@ -14,7 +14,7 @@ function ShopExcelUpload() {
         const formData = new FormData();
         formData.append('file', file);
         try {
-            const res = await fetch(API_BASE + '/api/shops/upload', {
+            const res = await fetch(API_BASE + '/api/landmarks/upload', {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer ' + token },
                 body: formData,
@@ -28,11 +28,8 @@ function ShopExcelUpload() {
 
     return (
         <div style={{ maxWidth: '500px', margin: '0 auto', paddingTop: '30px', textAlign: 'center' }}>
-            <h2>📂 가게 엑셀 업로드</h2>
-            <a href="/shop_sample.xlsx" download style={{ color: '#4472C4', fontSize: '14px' }}>
-                📥 가게 업로드 양식 다운로드
-            </a>
-            <div style={{ margin: '30px 0', padding: '40px', border: '2px dashed #ccc', borderRadius: '10px' }}>
+            <h2>📂 랜드마크 엑셀 업로드</h2>
+            <div style={{ margin: '30px 0', padding: '40px', border: '2px dashed #E67E22', borderRadius: '10px' }}>
                 <p style={{ marginBottom: '20px', color: '#666' }}>엑셀 파일(.xlsx)을 선택해주세요</p>
                 <input type="file" accept=".xlsx" onChange={handleUpload} />
                 {result && <p style={{ marginTop: '15px', color: result.success ? 'green' : 'red' }}>{result.message}</p>}
@@ -44,4 +41,4 @@ function ShopExcelUpload() {
     );
 }
 
-export default ShopExcelUpload;
+export default LandmarkExcelUpload;

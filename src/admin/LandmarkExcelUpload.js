@@ -29,6 +29,9 @@ function LandmarkExcelUpload() {
     return (
         <div style={{ maxWidth: '500px', margin: '0 auto', paddingTop: '30px', textAlign: 'center' }}>
             <h2>📂 랜드마크 엑셀 업로드</h2>
+            <a href="/landmark_sample.xlsx" download style={{ color: '#E67E22', fontSize: '14px' }}>
+                📥 랜드마크 업로드 양식 다운로드
+            </a>
             <div style={{ margin: '30px 0', padding: '40px', border: '2px dashed #E67E22', borderRadius: '10px' }}>
                 <p style={{ marginBottom: '20px', color: '#666' }}>엑셀 파일(.xlsx)을 선택해주세요</p>
                 <input type="file" accept=".xlsx" onChange={handleUpload} />
