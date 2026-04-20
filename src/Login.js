@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 
 const API_BASE = window.location.hostname === 'localhost'
     ? 'http://localhost:8080'
@@ -8,6 +8,14 @@ function Login() {
     const [userId, setUserId] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+
+    // 이미 로그인 상태면 관리자 페이지로 이동
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            window.location.href = '/admin';
+        }
+    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
