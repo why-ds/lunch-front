@@ -29,9 +29,20 @@ function LandmarkExcelUpload() {
     return (
         <div style={{ maxWidth: '500px', margin: '0 auto', paddingTop: '30px', textAlign: 'center' }}>
             <h2>📂 랜드마크 엑셀 업로드</h2>
-            <a href="/sample_landmark.xlsx" download="sample_landmark.xlsx" style={{ color: '#E67E22', fontSize: '14px' }}>
+            <button onClick={() => {
+                fetch('/landmark_sample.xlsx')
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'landmark_sample.xlsx';
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    });
+            }} style={{ color: '#E67E22', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', textDecoration: 'underline' }}>
                 📥 랜드마크 업로드 양식 다운로드
-            </a>
+            </button>
             <div style={{ margin: '30px 0', padding: '40px', border: '2px dashed #E67E22', borderRadius: '10px' }}>
                 <p style={{ marginBottom: '20px', color: '#666' }}>엑셀 파일(.xlsx)을 선택해주세요</p>
                 <input type="file" accept=".xlsx" onChange={handleUpload} />
