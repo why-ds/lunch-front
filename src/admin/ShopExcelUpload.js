@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'http://yds.it';
+const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8080' : '';
 
 function ShopExcelUpload() {
     const token = localStorage.getItem('token');
