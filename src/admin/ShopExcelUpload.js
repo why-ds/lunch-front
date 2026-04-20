@@ -29,9 +29,20 @@ function ShopExcelUpload() {
     return (
         <div style={{ maxWidth: '500px', margin: '0 auto', paddingTop: '30px', textAlign: 'center' }}>
             <h2>📂 가게 엑셀 업로드</h2>
-            <a href="/shop_sample.xlsx" download style={{ color: '#4472C4', fontSize: '14px' }}>
+            <button onClick={() => {
+                fetch('/shop_sample.xlsx')
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'shop_sample.xlsx';
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    });
+            }} style={{ color: '#4472C4', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', textDecoration: 'underline' }}>
                 📥 가게 업로드 양식 다운로드
-            </a>
+            </button>
             <div style={{ margin: '30px 0', padding: '40px', border: '2px dashed #ccc', borderRadius: '10px' }}>
                 <p style={{ marginBottom: '20px', color: '#666' }}>엑셀 파일(.xlsx)을 선택해주세요</p>
                 <input type="file" accept=".xlsx" onChange={handleUpload} />
