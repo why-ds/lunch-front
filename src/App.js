@@ -139,11 +139,16 @@ function App() {
             let url;
 
             if (filterMode === 'station') {
-                url = selectedStationCd
-                    ? `${API_BASE}/api/shops?stationCd=${selectedStationCd}`
-                    : `${API_BASE}/api/shops`;
+                if (!selectedLine) {
+                    alert('호선을 선택해주세요!');
+                    return;
+                }
+                if (!selectedStationCd) {
+                    alert('역을 선택해주세요!');
+                    return;
+                }
+                url = `${API_BASE}/api/shops?stationCd=${selectedStationCd}`;
             } else {
-                // 랜드마크 모드: 반경 500m 검색
                 if (!selectedLandmark) {
                     alert('랜드마크를 선택해주세요!');
                     return;
