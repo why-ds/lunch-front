@@ -10,9 +10,20 @@ function MyPage() {
 
     useEffect(() => {
         if (!token) { window.location.href = '/login'; return; }
-        loadFavorites();
-        loadBlacklist();
-    }, [token]);
+
+        const loadData = async () => {
+            try {
+                const favRes = await fetch(API_BASE + '/api/user/favorites', { headers });
+                if (favRes.ok) setFavorites(await favRes.json());
+
+                const blackRes = await fetch(API_BASE + '/api/user/blacklist', { headers });
+                if (blackRes.ok) setBlacklist(await blackRes.json());
+            } catch (e) { console.error(e); }
+        };
+
+        loadData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const headers = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
 
