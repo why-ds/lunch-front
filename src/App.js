@@ -31,7 +31,7 @@ function App() {
     const [selectedSido, setSelectedSido] = useState('');
     const [selectedGugun, setSelectedGugun] = useState('');
 
-// 시도 로드
+    // 시도 로드
     useEffect(() => {
         fetch(`${API_BASE}/api/landmarks/sidos`)
             .then(res => res.json())
@@ -39,7 +39,7 @@ function App() {
             .catch(err => console.error('시도 로드 실패:', err));
     }, []);
 
-// 구군 로드
+    // 구군 로드
     useEffect(() => {
         if (selectedSido) {
             fetch(`${API_BASE}/api/landmarks/guguns?sidoNm=${encodeURIComponent(selectedSido)}`)
@@ -53,7 +53,7 @@ function App() {
         }
     }, [selectedSido]);
 
-// 랜드마크 로드 (구군 선택 시)
+    // 랜드마크 로드 (구군 선택 시)
     useEffect(() => {
         if (selectedGugun) {
             fetch(`${API_BASE}/api/landmarks/filter?gugunCd=${selectedGugun}`)
@@ -180,6 +180,53 @@ function App() {
         setSelectedLandmark(null);
     };
 
+    // 카카오톡 공유
+    const handleShare = () => {
+        if (!selectedShop) {
+            alert('먼저 식당을 선택해주세요!');
+            return;
+        }
+
+        const kakao = window.Kakao;
+        if (!kakao || !kakao.isInitialized()) {
+            alert('카카오 SDK 초기화 실패');
+            return;
+        }
+
+        kakao.Share.sendDefault({
+            objectType: 'location',
+            address: selectedShop.address || '주소 정보 없음',
+            addressTitle: selectedShop.shopNm,
+            content: {
+                title: '🍚 오늘 점심은 ' + selectedShop.shopNm,
+                description: selectedShop.rmk
+                    ? selectedShop.rmk + ' | ' + (selectedShop.address || '')
+                    : selectedShop.address || '',
+                imageUrl: 'https://klunch.kr/favicon.ico',
+                link: {
+                    mobileWebUrl: 'https://klunch.kr',
+                    webUrl: 'https://klunch.kr',
+                },
+            },
+            buttons: [
+                {
+                    title: '카카오맵에서 보기',
+                    link: {
+                        mobileWebUrl: 'https://map.kakao.com/link/search/' + encodeURIComponent(selectedShop.shopNm + ' ' + (selectedShop.address || '')),
+                        webUrl: 'https://map.kakao.com/link/search/' + encodeURIComponent(selectedShop.shopNm + ' ' + (selectedShop.address || '')),
+                    },
+                },
+                {
+                    title: '점심 뭐 먹지?',
+                    link: {
+                        mobileWebUrl: 'https://klunch.kr',
+                        webUrl: 'https://klunch.kr',
+                    },
+                },
+            ],
+        });
+    };
+
     return (
         <div className="App" style={{ textAlign: 'center', paddingTop: '30px' }}>
             <h1>점심진짜뭐먹지🍚</h1>
@@ -255,21 +302,21 @@ function App() {
             }}>
                 🎲 식당 선택!
             </button>
+            {/* 카카오톡 공유 버튼 - 식당 선택 후에만 표시 */}
+            {selectedShop && (
+                <button onClick={handleShare} style={{
+                    padding: '10px 20px', fontSize: '14px',
+                    backgroundColor: '#FEE500', color: '#3C1E1E',
+                    border: 'none', borderRadius: '8px', cursor: 'pointer',
+                    marginBottom: '10px'
+                }}>
+                    💬 카카오톡으로 공유
+                </button>
+            )}
             {/* 관리자 링크 */}
             <div style={{ marginTop: '30px', paddingBottom: '30px' }}>
                 <a href="/login" style={{ color: '#999', fontSize: '14px' }}>관리자 로그인</a>
             </div>
-            {/*<div style={{ margin: '20px auto', padding: '20px', border: '2px dashed #ccc', width: '400px' }}>
-                <h3>📂 가게 엑셀 업로드</h3>
-                <input type="file" accept=".xlsx" onChange={handleFileUpload} />
-                {uploadResult && <p style={{ marginTop: '10px', color: uploadResult.success ? 'green' : 'red' }}>{uploadResult.message}</p>}
-            </div>
-
-            <div style={{ margin: '20px auto', padding: '20px', border: '2px dashed #E67E22', width: '400px' }}>
-                <h3>🏢 랜드마크 엑셀 업로드</h3>
-                <input type="file" accept=".xlsx" onChange={handleLandmarkUpload} />
-                {landmarkResult && <p style={{ marginTop: '10px', color: landmarkResult.success ? 'green' : 'red' }}>{landmarkResult.message}</p>}
-            </div>*/}
         </div>
     );
 }
