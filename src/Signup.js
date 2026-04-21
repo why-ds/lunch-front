@@ -57,8 +57,13 @@ function Signup() {
         e.preventDefault();
         setError('');
         if (!form.userId.trim()) { setError('아이디를 입력해주세요.'); return; }
+        if (!form.userId.trim() || form.userId.trim().length < 4) { setError('아이디는 4자 이상이어야 합니다.'); return; }
         if (!idChecked) { setError('아이디 중복확인을 해주세요.'); return; }
-        if (!form.password || form.password.length < 4) { setError('비밀번호는 4자 이상이어야 합니다.'); return; }
+        if (!form.password || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(form.password)) {
+            setError('비밀번호는 8자 이상, 대문자/소문자/숫자/특수문자를 모두 포함해야 합니다.');
+            return;
+        }
+        if (form.password !== form.passwordConfirm) { setError('비밀번호가 일치하지 않습니다.'); return; }
         if (form.password !== form.passwordConfirm) { setError('비밀번호가 일치하지 않습니다.'); return; }
         if (!form.nickname.trim()) { setError('닉네임을 입력해주세요.'); return; }
         if (!emailVerified) { setError('이메일 인증을 완료해주세요.'); return; }
