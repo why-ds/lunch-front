@@ -35,7 +35,11 @@ function Login() {
                 localStorage.setItem('userId', result.userId);
                 localStorage.setItem('userNm', result.userNm);
                 localStorage.setItem('role', result.role);
-                window.location.href = '/admin';
+                if (result.role === 'ADMIN') {
+                    window.location.href = '/admin';
+                } else {
+                    window.location.href = '/';
+                }
             } else {
                 setError(result.message);
             }
@@ -46,7 +50,7 @@ function Login() {
 
     return (
         <div style={{ textAlign: 'center', paddingTop: '100px' }}>
-            <h1>🔐 관리자 로그인</h1>
+            <h1>🔐 로그인</h1>
             <form onSubmit={handleLogin} style={{ margin: '30px auto', maxWidth: '300px' }}>
                 <input
                     type="text"
