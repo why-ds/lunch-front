@@ -282,7 +282,7 @@ function App() {
 
             {/* 지하철 필터 */}
             {filterMode === 'station' && (
-                <div style={{ margin: '15px auto', display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                <div style={{ margin: '15px auto', display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
                     <select value={selectedLine} onChange={(e) => setSelectedLine(e.target.value)} style={{ padding: '10px', borderRadius: '8px' }}>
                         <option value="">호선 선택</option>
                         {lines.map((line, idx) => <option key={idx} value={line}>{line}</option>)}
@@ -290,6 +290,10 @@ function App() {
                     <select value={selectedStationCd} onChange={(e) => setSelectedStationCd(e.target.value)} disabled={!selectedLine} style={{ padding: '10px', borderRadius: '8px' }}>
                         <option value="">역명 선택</option>
                         {stations.map(s => <option key={s.stationCd} value={s.stationCd}>{s.stationNm}</option>)}
+                    </select>
+                    <select value={selectedFoodType} onChange={(e) => setSelectedFoodType(e.target.value)} style={{ padding: '10px', borderRadius: '8px' }}>
+                        <option value="">음식종류 전체</option>
+                        {foodTypes.map(f => <option key={f.dtlCd} value={f.dtlCd}>{f.dtlNm}</option>)}
                     </select>
                 </div>
             )}
@@ -319,23 +323,6 @@ function App() {
                         {foodTypes.map(f => <option key={f.dtlCd} value={f.dtlCd}>{f.dtlNm}</option>)}
                     </select>
                     <span style={{ padding: '10px', fontSize: '14px', color: '#666' }}>반경 500m</span>
-                </div>
-            )}
-
-            {filterMode === 'station' && (
-                <div style={{ margin: '15px auto', display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                    <select value={selectedLine} onChange={(e) => setSelectedLine(e.target.value)} style={{ padding: '10px', borderRadius: '8px' }}>
-                        <option value="">호선 선택</option>
-                        {lines.map((line, idx) => <option key={idx} value={line}>{line}</option>)}
-                    </select>
-                    <select value={selectedStationCd} onChange={(e) => setSelectedStationCd(e.target.value)} disabled={!selectedLine} style={{ padding: '10px', borderRadius: '8px' }}>
-                        <option value="">역명 선택</option>
-                        {stations.map(s => <option key={s.stationCd} value={s.stationCd}>{s.stationNm}</option>)}
-                    </select>
-                    <select value={selectedFoodType} onChange={(e) => setSelectedFoodType(e.target.value)} style={{ padding: '10px', borderRadius: '8px' }}>
-                        <option value="">음식종류 전체</option>
-                        {foodTypes.map(f => <option key={f.dtlCd} value={f.dtlCd}>{f.dtlNm}</option>)}
-                    </select>
                 </div>
             )}
 
