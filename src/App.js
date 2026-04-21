@@ -302,16 +302,14 @@ function App() {
                 🎲 식당 선택!
             </button>
             {selectedShop && (
-                <img
-                    src="/kakao_share.png"
-                    alt="카카오톡 공유"
-                    onClick={handleShare}
-                    style={{
-                        width: '200px',
-                        cursor: 'pointer',
-                        marginBottom: '30px'
-                    }}
-                />
+                <button onClick={handleShare} style={{
+                    padding: '15px 20px', fontSize: '20px',
+                    backgroundColor: '#FEE500', color: '#3C1E1E',
+                    border: 'none', borderRadius: '10px', cursor: 'pointer',
+                    marginBottom: '30px'
+                }}>
+                    💬
+                </button>
             )}
             {/* 관리자 링크 */}
             <div style={{ marginTop: '30px', paddingBottom: '30px' }}>
