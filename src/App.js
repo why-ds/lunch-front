@@ -30,6 +30,9 @@ function App() {
     const [guguns, setGuguns] = useState([]);
     const [selectedSido, setSelectedSido] = useState('');
     const [selectedGugun, setSelectedGugun] = useState('');
+    // 음식종류 필터 추가
+    const [foodTypes, setFoodTypes] = useState([]);
+    const [selectedFoodType, setSelectedFoodType] = useState('');
 
     // 시도 로드
     useEffect(() => {
@@ -66,6 +69,13 @@ function App() {
         }
     }, [selectedGugun]);
 
+    // 음식 종류
+    useEffect(() => {
+        fetch(`${API_BASE}/api/codes/details?grpCd=FOOD_TYPE`)
+            .then(res => res.json())
+            .then(data => setFoodTypes(data))
+            .catch(err => console.error('음식종류 로드 실패:', err));
+    }, []);
 
     // 호선 로드
     useEffect(() => {
@@ -148,12 +158,18 @@ function App() {
                     return;
                 }
                 url = `${API_BASE}/api/shops?stationCd=${selectedStationCd}`;
+                if (selectedFoodType) {
+                    url += `&foodTypeCd=${selectedFoodType}`;
+                }
             } else {
                 if (!selectedLandmark) {
                     alert('랜드마크를 선택해주세요!');
                     return;
                 }
                 url = `${API_BASE}/api/shops/nearby?lat=${selectedLandmark.latitude}&lng=${selectedLandmark.longitude}&radius=500`;
+                if (selectedFoodType) {
+                    url += `&foodTypeCd=${selectedFoodType}`;
+                }
             }
 
             const response = await fetch(url);
@@ -180,6 +196,7 @@ function App() {
         setSelectedShop(null);
         setSelectedLine('');
         setSelectedStationCd('');
+        setSelectedFoodType('');
         setSelectedSido('');
         setSelectedGugun('');
         setSelectedLandmark(null);
@@ -296,9 +313,32 @@ function App() {
                         <option value="">랜드마크 선택</option>
                         {landmarks.map(lm => <option key={lm.landmarkSeq} value={lm.landmarkSeq}>{lm.landmarkNm}</option>)}
                     </select>
+                    <select value={selectedFoodType} onChange={(e) => setSelectedFoodType(e.target.value)}
+                            style={{ padding: '10px', borderRadius: '8px' }}>
+                        <option value="">음식종류 전체</option>
+                        {foodTypes.map(f => <option key={f.dtlCd} value={f.dtlCd}>{f.dtlNm}</option>)}
+                    </select>
                     <span style={{ padding: '10px', fontSize: '14px', color: '#666' }}>반경 500m</span>
                 </div>
             )}
+
+            {filterMode === 'station' && (
+                <div style={{ margin: '15px auto', display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    <select value={selectedLine} onChange={(e) => setSelectedLine(e.target.value)} style={{ padding: '10px', borderRadius: '8px' }}>
+                        <option value="">호선 선택</option>
+                        {lines.map((line, idx) => <option key={idx} value={line}>{line}</option>)}
+                    </select>
+                    <select value={selectedStationCd} onChange={(e) => setSelectedStationCd(e.target.value)} disabled={!selectedLine} style={{ padding: '10px', borderRadius: '8px' }}>
+                        <option value="">역명 선택</option>
+                        {stations.map(s => <option key={s.stationCd} value={s.stationCd}>{s.stationNm}</option>)}
+                    </select>
+                    <select value={selectedFoodType} onChange={(e) => setSelectedFoodType(e.target.value)} style={{ padding: '10px', borderRadius: '8px' }}>
+                        <option value="">음식종류 전체</option>
+                        {foodTypes.map(f => <option key={f.dtlCd} value={f.dtlCd}>{f.dtlNm}</option>)}
+                    </select>
+                </div>
+            )}
+
             <button onClick={handleSelectShop} style={{
                 padding: '15px 40px', fontSize: '20px',
                 backgroundColor: filterMode === 'station' ? '#4472C4' : '#E67E22',
