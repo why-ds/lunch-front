@@ -9,6 +9,7 @@ import ShopRegister from './admin/ShopRegister';
 import ShopExcelUpload from './admin/ShopExcelUpload';
 import LandmarkRegister from './admin/LandmarkRegister';
 import LandmarkExcelUpload from './admin/LandmarkExcelUpload';
+import Signup from './Signup';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -21,6 +22,7 @@ root.render(
             <Route path="/admin/shop-excel" element={<ShopExcelUpload />} />
             <Route path="/admin/landmark" element={<LandmarkRegister />} />
             <Route path="/admin/landmark-excel" element={<LandmarkExcelUpload />} />
+            <Route path="/signup" element={<Signup />} />
         </Routes>
     </BrowserRouter>
 );

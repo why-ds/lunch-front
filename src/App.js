@@ -343,9 +343,31 @@ function App() {
                     💬
                 </button>
             )}
-            {/* 관리자 링크 */}
+            {/* 하단 로그인/사용자 영역 */}
             <div style={{ marginTop: '30px', paddingBottom: '30px' }}>
-                <a href="/login" style={{ color: '#999', fontSize: '14px' }}>관리자 로그인</a>
+                {localStorage.getItem('token') ? (
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px' }}>
+            <span style={{ fontSize: '14px', color: '#666' }}>
+                👤 {localStorage.getItem('userNm')}님
+            </span>
+                        {localStorage.getItem('role') === 'ADMIN' && (
+                            <a href="/admin" style={{ fontSize: '14px', color: '#4472C4' }}>⚙️ 관리</a>
+                        )}
+                        <a href="/mypage" style={{ fontSize: '14px', color: '#666' }}>마이페이지</a>
+                        <button onClick={() => {
+                            localStorage.clear();
+                            window.location.reload();
+                        }} style={{ fontSize: '14px', color: '#999', background: 'none', border: 'none', cursor: 'pointer' }}>
+                            로그아웃
+                        </button>
+                    </div>
+                ) : (
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
+                        <a href="/login" style={{ fontSize: '14px', color: '#4472C4' }}>로그인</a>
+                        <span style={{ color: '#ddd' }}>|</span>
+                        <a href="/signup" style={{ fontSize: '14px', color: '#4472C4' }}>회원가입</a>
+                    </div>
+                )}
             </div>
         </div>
     );
