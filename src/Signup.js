@@ -3,15 +3,17 @@ import React, { useState, useEffect } from 'react';
 const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8080' : '';
 
 function Signup() {
-    const [form, setForm] = useState({ userId: '', password: '', passwordConfirm: '', userNm: '' });
+    const [form, setForm] = useState({ userId: '', password: '', passwordConfirm: '', nickname: '', email: '', verifyCode: '' });
     const [idChecked, setIdChecked] = useState(false);
     const [idMessage, setIdMessage] = useState('');
+    const [emailSent, setEmailSent] = useState(false);
+    const [emailVerified, setEmailVerified] = useState(false);
+    const [emailMessage, setEmailMessage] = useState('');
+    const [agreed, setAgreed] = useState(false);
     const [error, setError] = useState('');
 
     useEffect(() => {
-        if (localStorage.getItem('token')) {
-            window.location.href = '/';
-        }
+        if (localStorage.getItem('token')) window.location.href = '/';
     }, []);
 
     const checkUserId = async () => {
@@ -24,16 +26,43 @@ function Signup() {
         } catch (e) { setIdMessage('확인 실패'); }
     };
 
+    const sendVerifyCode = async () => {
+        if (!form.email.trim()) { setEmailMessage('이메일을 입력해주세요.'); return; }
+        try {
+            const res = await fetch(API_BASE + '/api/auth/send-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: form.email }),
+            });
+            const data = await res.json();
+            setEmailSent(data.success);
+            setEmailMessage(data.message);
+        } catch (e) { setEmailMessage('발송 실패'); }
+    };
+
+    const verifyCode = async () => {
+        try {
+            const res = await fetch(API_BASE + '/api/auth/verify-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: form.email, code: form.verifyCode }),
+            });
+            const data = await res.json();
+            setEmailVerified(data.success);
+            setEmailMessage(data.message);
+        } catch (e) { setEmailMessage('인증 실패'); }
+    };
+
     const handleSignup = async (e) => {
         e.preventDefault();
         setError('');
-
         if (!form.userId.trim()) { setError('아이디를 입력해주세요.'); return; }
         if (!idChecked) { setError('아이디 중복확인을 해주세요.'); return; }
-        if (!form.password) { setError('비밀번호를 입력해주세요.'); return; }
-        if (form.password.length < 4) { setError('비밀번호는 4자 이상이어야 합니다.'); return; }
+        if (!form.password || form.password.length < 4) { setError('비밀번호는 4자 이상이어야 합니다.'); return; }
         if (form.password !== form.passwordConfirm) { setError('비밀번호가 일치하지 않습니다.'); return; }
-        if (!form.userNm.trim()) { setError('이름을 입력해주세요.'); return; }
+        if (!form.nickname.trim()) { setError('닉네임을 입력해주세요.'); return; }
+        if (!emailVerified) { setError('이메일 인증을 완료해주세요.'); return; }
+        if (!agreed) { setError('개인정보 수집에 동의해주세요.'); return; }
 
         try {
             const res = await fetch(API_BASE + '/api/auth/signup', {
@@ -42,7 +71,8 @@ function Signup() {
                 body: JSON.stringify({
                     userId: form.userId,
                     password: form.password,
-                    userNm: form.userNm
+                    nickname: form.nickname,
+                    email: form.email
                 }),
             });
             const result = await res.json();
@@ -56,35 +86,64 @@ function Signup() {
     };
 
     const inputStyle = { width: '100%', padding: '12px', marginBottom: '10px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '16px', boxSizing: 'border-box' };
+    const btnSmall = { padding: '12px 16px', backgroundColor: '#4472C4', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', whiteSpace: 'nowrap', fontSize: '14px' };
 
     return (
-        <div style={{ textAlign: 'center', paddingTop: '80px' }}>
+        <div style={{ textAlign: 'center', paddingTop: '60px' }}>
             <h1>📝 회원가입</h1>
-            <form onSubmit={handleSignup} style={{ margin: '30px auto', maxWidth: '300px' }}>
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                    <input
-                        type="text"
-                        placeholder="아이디"
-                        value={form.userId}
-                        onChange={(e) => { setForm({...form, userId: e.target.value}); setIdChecked(false); setIdMessage(''); }}
-                        style={{ ...inputStyle, flex: 1, marginBottom: 0 }}
-                    />
-                    <button type="button" onClick={checkUserId} style={{
-                        padding: '12px 16px', backgroundColor: '#4472C4', color: 'white',
-                        border: 'none', borderRadius: '8px', cursor: 'pointer', whiteSpace: 'nowrap', fontSize: '14px'
-                    }}>중복확인</button>
+            <form onSubmit={handleSignup} style={{ margin: '20px auto', maxWidth: '320px' }}>
+                {/* 아이디 */}
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '4px' }}>
+                    <input type="text" placeholder="아이디" value={form.userId}
+                           onChange={(e) => { setForm({...form, userId: e.target.value}); setIdChecked(false); setIdMessage(''); }}
+                           style={{ ...inputStyle, flex: 1, marginBottom: 0 }} />
+                    <button type="button" onClick={checkUserId} style={btnSmall}>중복확인</button>
                 </div>
-                {idMessage && (
-                    <p style={{ fontSize: '13px', color: idChecked ? 'green' : 'red', margin: '0 0 10px 0', textAlign: 'left' }}>
-                        {idMessage}
-                    </p>
-                )}
+                {idMessage && <p style={{ fontSize: '13px', color: idChecked ? 'green' : 'red', margin: '0 0 10px 0', textAlign: 'left' }}>{idMessage}</p>}
+
+                {/* 비밀번호 */}
                 <input type="password" placeholder="비밀번호 (4자 이상)" value={form.password}
                        onChange={(e) => setForm({...form, password: e.target.value})} style={inputStyle} />
                 <input type="password" placeholder="비밀번호 확인" value={form.passwordConfirm}
                        onChange={(e) => setForm({...form, passwordConfirm: e.target.value})} style={inputStyle} />
-                <input type="text" placeholder="이름" value={form.userNm}
-                       onChange={(e) => setForm({...form, userNm: e.target.value})} style={inputStyle} />
+
+                {/* 닉네임 */}
+                <input type="text" placeholder="닉네임" value={form.nickname}
+                       onChange={(e) => setForm({...form, nickname: e.target.value})} style={inputStyle} />
+
+                {/* 이메일 인증 */}
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '4px' }}>
+                    <input type="email" placeholder="이메일" value={form.email}
+                           onChange={(e) => { setForm({...form, email: e.target.value}); setEmailSent(false); setEmailVerified(false); setEmailMessage(''); }}
+                           disabled={emailVerified}
+                           style={{ ...inputStyle, flex: 1, marginBottom: 0 }} />
+                    <button type="button" onClick={sendVerifyCode} disabled={emailVerified}
+                            style={{ ...btnSmall, backgroundColor: emailVerified ? '#95a5a6' : '#E67E22' }}>
+                        {emailSent ? '재발송' : '인증요청'}
+                    </button>
+                </div>
+                {emailSent && !emailVerified && (
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '4px', marginTop: '4px' }}>
+                        <input type="text" placeholder="인증코드 6자리" value={form.verifyCode}
+                               onChange={(e) => setForm({...form, verifyCode: e.target.value})}
+                               style={{ ...inputStyle, flex: 1, marginBottom: 0 }} />
+                        <button type="button" onClick={verifyCode} style={{ ...btnSmall, backgroundColor: '#27ae60' }}>확인</button>
+                    </div>
+                )}
+                {emailMessage && <p style={{ fontSize: '13px', color: emailVerified ? 'green' : '#E67E22', margin: '0 0 10px 0', textAlign: 'left' }}>{emailMessage}</p>}
+
+                {/* 개인정보 동의 */}
+                <div style={{ textAlign: 'left', margin: '15px 0', padding: '10px', backgroundColor: '#f9f9f9', borderRadius: '8px', fontSize: '13px', color: '#666' }}>
+                    <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', color: '#333' }}>개인정보 수집 및 이용 동의</p>
+                    <p style={{ margin: '0 0 4px 0' }}>수집항목: 아이디, 비밀번호(암호화), 닉네임, 이메일</p>
+                    <p style={{ margin: '0 0 4px 0' }}>수집목적: 서비스 이용 및 본인 확인</p>
+                    <p style={{ margin: '0 0 8px 0' }}>보유기간: 회원 탈퇴 시까지</p>
+                    <label style={{ cursor: 'pointer' }}>
+                        <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
+                        {' '}동의합니다
+                    </label>
+                </div>
+
                 <button type="submit" style={{
                     width: '100%', padding: '12px', backgroundColor: '#4472C4', color: 'white',
                     border: 'none', borderRadius: '8px', fontSize: '16px', cursor: 'pointer'
