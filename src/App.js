@@ -298,19 +298,18 @@ function App() {
             <button onClick={handleSelectShop} style={{
                 padding: '15px 40px', fontSize: '20px',
                 backgroundColor: filterMode === 'station' ? '#4472C4' : '#E67E22',
-                color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', marginBottom: '30px'
+                color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', marginBottom: '10px'
             }}>
                 🎲 식당 선택!
             </button>
-            {/* 카카오톡 공유 버튼 - 식당 선택 후에만 표시 */}
             {selectedShop && (
                 <button onClick={handleShare} style={{
-                    padding: '10px 20px', fontSize: '14px',
+                    padding: '15px 40px', fontSize: '20px',
                     backgroundColor: '#FEE500', color: '#3C1E1E',
-                    border: 'none', borderRadius: '8px', cursor: 'pointer',
-                    marginBottom: '10px'
+                    border: 'none', borderRadius: '10px', cursor: 'pointer',
+                    marginBottom: '30px'
                 }}>
-                    💬 카카오톡으로 공유
+                    💬 공유
                 </button>
             )}
             {/* 관리자 링크 */}
