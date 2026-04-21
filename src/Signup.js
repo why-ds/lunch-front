@@ -99,7 +99,7 @@ function Signup() {
             <form onSubmit={handleSignup} style={{ margin: '20px auto', maxWidth: '320px' }}>
                 {/* 아이디 */}
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '4px' }}>
-                    <input type="text" placeholder="아이디" value={form.userId}
+                    <input type="text" placeholder="아이디 (4자 이상)" value={form.userId}
                            onChange={(e) => { setForm({...form, userId: e.target.value}); setIdChecked(false); setIdMessage(''); }}
                            style={{ ...inputStyle, flex: 1, marginBottom: 0 }} />
                     <button type="button" onClick={checkUserId} style={btnSmall}>중복확인</button>
@@ -107,7 +107,7 @@ function Signup() {
                 {idMessage && <p style={{ fontSize: '13px', color: idChecked ? 'green' : 'red', margin: '0 0 10px 0', textAlign: 'left' }}>{idMessage}</p>}
 
                 {/* 비밀번호 */}
-                <input type="password" placeholder="비밀번호 (4자 이상)" value={form.password}
+                <input type="password" placeholder="비밀번호 (8자 이상)" value={form.password}
                        onChange={(e) => setForm({...form, password: e.target.value})} style={inputStyle} />
                 <input type="password" placeholder="비밀번호 확인" value={form.passwordConfirm}
                        onChange={(e) => setForm({...form, passwordConfirm: e.target.value})} style={inputStyle} />
