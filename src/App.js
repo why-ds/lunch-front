@@ -294,22 +294,25 @@ function App() {
                     <span style={{ padding: '10px', fontSize: '14px', color: '#666' }}>반경 500m</span>
                 </div>
             )}
-
+            {/* 메인 버튼: 식당 선택 */}
             <button onClick={handleSelectShop} style={{
-                padding: '15px 40px', fontSize: '20px',
+                padding: '15px 40px', fontSize: '20px', fontWeight: 'bold',
                 backgroundColor: filterMode === 'station' ? '#4472C4' : '#E67E22',
-                color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', marginBottom: '10px'
+                color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer'
             }}>
                 🎲 식당 선택!
             </button>
+
+            {/* 서브 버튼: 카카오톡 공유 (텍스트 제거, 둥글고 작은 아이콘 형태로 변경) */}
             {selectedShop && (
                 <button onClick={handleShare} style={{
-                    padding: '15px 40px', fontSize: '20px',
+                    width: '48px', height: '48px', fontSize: '22px', // 버튼 전체 크기는 작게, 이모지는 잘 보이게
                     backgroundColor: '#FEE500', color: '#3C1E1E',
-                    border: 'none', borderRadius: '10px', cursor: 'pointer',
-                    marginBottom: '30px'
-                }}>
-                    💬 공유
+                    border: 'none', borderRadius: '50%', cursor: 'pointer', // 완전한 원형으로 만들기
+                    display: 'flex', justifyContent: 'center', alignItems: 'center',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }} title="카카오톡 공유">
+                    📤
                 </button>
             )}
             {/* 관리자 링크 */}
