@@ -448,7 +448,7 @@ function App() {
                         {localStorage.getItem('role') === 'ADMIN' && (
                             <a href="/admin" style={{ fontSize: '14px', color: '#4472C4' }}>⚙️ 관리</a>
                         )}
-                        <a href="/mypage/MyPage" style={{ fontSize: '14px', color: '#666' }}>마이페이지</a>
+                        <a href="/mypage" style={{ fontSize: '14px', color: '#666' }}>마이페이지</a>
                         <button onClick={() => {
                             localStorage.clear();
                             window.location.reload();
