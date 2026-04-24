@@ -455,15 +455,7 @@ function App() {
                     <span style={{ padding: '10px', fontSize: '14px', color: '#666' }}>반경 500m</span>
                 </div>
             )}
-            {/* 즐겨찾기만 뽑기 */}
-            {localStorage.getItem('token') && (
-                <div style={{ margin: '10px auto' }}>
-                    <label style={{ fontSize: '14px', color: '#666', cursor: 'pointer' }}>
-                        <input type="checkbox" checked={favOnly} onChange={(e) => setFavOnly(e.target.checked)} />
-                        {' '}⭐ 즐겨찾기만 뽑기
-                    </label>
-                </div>
-            )}
+
             <button onClick={handleSelectShop} style={{
                 padding: '15px 40px', fontSize: '20px',
                 backgroundColor: filterMode === 'station' ? '#4472C4' : '#E67E22',
@@ -471,6 +463,7 @@ function App() {
             }}>
                 🎲 식당 선택!
             </button>
+            {/* 즐겨찾기만 뽑기 */}
             {localStorage.getItem('token') && (
                 <button onClick={() => setFavOnly(!favOnly)} style={{
                     padding: '15px 20px', fontSize: '20px',
