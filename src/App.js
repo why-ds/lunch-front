@@ -471,14 +471,14 @@ function App() {
             }}>
                 🎲 식당 선택!
             </button>
-            {selectedShop && (
-                <button onClick={handleShare} style={{
+            {localStorage.getItem('token') && (
+                <button onClick={() => setFavOnly(!favOnly)} style={{
                     padding: '15px 20px', fontSize: '20px',
-                    backgroundColor: '#FEE500', color: '#3C1E1E',
+                    backgroundColor: favOnly ? '#FFD700' : '#e0e0e0',
                     border: 'none', borderRadius: '10px', cursor: 'pointer',
-                    marginBottom: '30px'
+                    marginBottom: '10px'
                 }}>
-                    💬
+                    ⭐
                 </button>
             )}
             {/* 하단 로그인/사용자 영역 */}
