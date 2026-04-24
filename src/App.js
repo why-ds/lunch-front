@@ -322,7 +322,7 @@ function App() {
             ],
         });
     };
-
+/*
     const handleToggleFavorite = async () => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -359,7 +359,7 @@ function App() {
             const result = await res.json();
             if (result.success) setIsBlacklisted(result.action === 'added');
         } catch (e) { console.error(e); }
-    };
+    };*/
 
     return (
         <div className="App" style={{ textAlign: 'center', paddingTop: '30px' }}>
