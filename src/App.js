@@ -148,7 +148,7 @@ function App() {
     }, [selectedShop]);
 
     // 식당 선택 시 즐겨찾기/블랙 여부 확인
-    useEffect(() => {
+   /* useEffect(() => {
         const token = localStorage.getItem('token');
         if (!selectedShop || !token) {
             setIsFavorite(false);
@@ -167,7 +167,7 @@ function App() {
             .then(res => res.json())
             .then(data => setIsBlacklisted(data.isBlacklisted))
             .catch(() => {});
-    }, [selectedShop]);
+    }, [selectedShop]);*/
 
     // 토큰 만료 체크 (1분마다)
     useEffect(() => {
