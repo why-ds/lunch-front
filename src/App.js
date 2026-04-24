@@ -34,8 +34,6 @@ function App() {
     const [foodTypes, setFoodTypes] = useState([]);
     const [selectedFoodType, setSelectedFoodType] = useState('');
     // 즐겨찾기/블랙리스트 상태
-    const [isFavorite, setIsFavorite] = useState(false);
-    const [isBlacklisted, setIsBlacklisted] = useState(false);
     const [favOnly, setFavOnly] = useState(false);
 
     // 시도 로드
@@ -323,44 +321,6 @@ function App() {
         });
     };
 
-    const handleToggleFavorite = async () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            if (window.confirm('로그인이 필요합니다. 로그인하시겠습니까?')) {
-                window.location.href = '/login';
-            }
-            return;
-        }
-        try {
-            const res = await fetch(API_BASE + '/api/user/favorites/toggle', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                body: JSON.stringify({ shopSeq: selectedShop.shopSeq })
-            });
-            const result = await res.json();
-            if (result.success) setIsFavorite(result.action === 'added');
-        } catch (e) { console.error(e); }
-    };
-
-    const handleToggleBlacklist = async () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            if (window.confirm('로그인이 필요합니다. 로그인하시겠습니까?')) {
-                window.location.href = '/login';
-            }
-            return;
-        }
-        try {
-            const res = await fetch(API_BASE + '/api/user/blacklist/toggle', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                body: JSON.stringify({ shopSeq: selectedShop.shopSeq })
-            });
-            const result = await res.json();
-            if (result.success) setIsBlacklisted(result.action === 'added');
-        } catch (e) { console.error(e); }
-    };
-
     return (
         <div className="App" style={{ textAlign: 'center', paddingTop: '30px' }}>
             <h1>점심진짜뭐먹지🍚</h1>
@@ -369,25 +329,6 @@ function App() {
             <div style={{ margin: '20px auto', fontSize: '32px', fontWeight: 'bold', minHeight: '45px' }}>
                 {selectedShop ? `${selectedShop.shopNm}${selectedShop.rmk ? '(' + selectedShop.rmk + ')' : ''}` : '랜덤뽑기🎲'}
             </div>
-
-            {/* 즐겨찾기 / 블랙리스트 버튼 */}
-            {/*{selectedShop && (
-                <div style={{ margin: '0 auto 15px', display: 'flex', justifyContent: 'center', gap: '15px' }}>
-                    <button onClick={handleToggleFavorite} style={{
-                        fontSize: '24px', background: 'none', border: 'none', cursor: 'pointer',
-                        opacity: isFavorite ? 1 : 0.3
-                    }}>
-                        ⭐
-                    </button>
-                    <button onClick={handleToggleBlacklist} style={{
-                        fontSize: '24px', background: 'none', border: 'none', cursor: 'pointer',
-                        opacity: isBlacklisted ? 1 : 0.3
-                    }}>
-                        🚫
-                    </button>
-                </div>
-            )}*/}
-
             {/* 필터 모드 선택 */}
             <div style={{ margin: '15px auto' }}>
                 <button
