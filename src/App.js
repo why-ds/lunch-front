@@ -34,6 +34,8 @@ function App() {
     const [foodTypes, setFoodTypes] = useState([]);
     const [selectedFoodType, setSelectedFoodType] = useState('');
     // 즐겨찾기/블랙리스트 상태
+    const [isFavorite, setIsFavorite] = useState(false);
+    const [isBlacklisted, setIsBlacklisted] = useState(false);
     const [favOnly, setFavOnly] = useState(false);
 
     // 시도 로드
@@ -319,6 +321,44 @@ function App() {
                 },
             ],
         });
+    };
+
+    const handleToggleFavorite = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            if (window.confirm('로그인이 필요합니다. 로그인하시겠습니까?')) {
+                window.location.href = '/login';
+            }
+            return;
+        }
+        try {
+            const res = await fetch(API_BASE + '/api/user/favorites/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ shopSeq: selectedShop.shopSeq })
+            });
+            const result = await res.json();
+            if (result.success) setIsFavorite(result.action === 'added');
+        } catch (e) { console.error(e); }
+    };
+
+    const handleToggleBlacklist = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            if (window.confirm('로그인이 필요합니다. 로그인하시겠습니까?')) {
+                window.location.href = '/login';
+            }
+            return;
+        }
+        try {
+            const res = await fetch(API_BASE + '/api/user/blacklist/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ shopSeq: selectedShop.shopSeq })
+            });
+            const result = await res.json();
+            if (result.success) setIsBlacklisted(result.action === 'added');
+        } catch (e) { console.error(e); }
     };
 
     return (
