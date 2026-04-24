@@ -36,6 +36,7 @@ function App() {
     // 즐겨찾기/블랙리스트 상태
     const [isFavorite, setIsFavorite] = useState(false);
     const [isBlacklisted, setIsBlacklisted] = useState(false);
+    const [favOnly, setFavOnly] = useState(false);
 
     // 시도 로드
     useEffect(() => {
@@ -223,7 +224,7 @@ function App() {
             const response = await fetch(url);
             let data = await response.json();
 
-            // 블랙리스트 제외
+            // 블랙리스트 제외 (기존 코드)
             const token = localStorage.getItem('token');
             if (token) {
                 try {
@@ -233,6 +234,16 @@ function App() {
                     const blackIds = await blackRes.json();
                     if (blackIds.length > 0) {
                         data = data.filter(shop => !blackIds.includes(shop.shopSeq));
+                    }
+
+                    // 즐겨찾기만 필터
+                    if (favOnly) {
+                        const favRes = await fetch(API_BASE + '/api/user/favorites', {
+                            headers: { 'Authorization': 'Bearer ' + token }
+                        });
+                        const favList = await favRes.json();
+                        const favIds = favList.map(f => f.shopSeq);
+                        data = data.filter(shop => favIds.includes(shop.shopSeq));
                     }
                 } catch (e) { console.error(e); }
             }
@@ -262,6 +273,7 @@ function App() {
         setSelectedSido('');
         setSelectedGugun('');
         setSelectedLandmark(null);
+        setFavOnly(false);
     };
 
     // 카카오톡 공유
@@ -443,7 +455,15 @@ function App() {
                     <span style={{ padding: '10px', fontSize: '14px', color: '#666' }}>반경 500m</span>
                 </div>
             )}
-
+            {/* 즐겨찾기만 뽑기 */}
+            {localStorage.getItem('token') && (
+                <div style={{ margin: '10px auto' }}>
+                    <label style={{ fontSize: '14px', color: '#666', cursor: 'pointer' }}>
+                        <input type="checkbox" checked={favOnly} onChange={(e) => setFavOnly(e.target.checked)} />
+                        {' '}⭐ 즐겨찾기만 뽑기
+                    </label>
+                </div>
+            )}
             <button onClick={handleSelectShop} style={{
                 padding: '15px 40px', fontSize: '20px',
                 backgroundColor: filterMode === 'station' ? '#4472C4' : '#E67E22',
