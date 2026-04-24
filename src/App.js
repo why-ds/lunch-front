@@ -34,8 +34,8 @@ function App() {
     const [foodTypes, setFoodTypes] = useState([]);
     const [selectedFoodType, setSelectedFoodType] = useState('');
     // 즐겨찾기/블랙리스트 상태
-    const [isFavorite, setIsFavorite] = useState(false);
-    const [isBlacklisted, setIsBlacklisted] = useState(false);
+    /*const [isFavorite, setIsFavorite] = useState(false);
+    const [isBlacklisted, setIsBlacklisted] = useState(false);*/
     const [favOnly, setFavOnly] = useState(false);
 
     // 시도 로드
