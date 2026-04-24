@@ -366,8 +366,26 @@ function App() {
             <h1>점심진짜뭐먹지🍚</h1>
             <div ref={mapRef} style={{ width: '90%', maxWidth: '600px', height: '350px', margin: '20px auto', borderRadius: '12px', border: '2px solid #ddd' }} />
 
-            <div style={{ margin: '20px auto', fontSize: '32px', fontWeight: 'bold', minHeight: '45px' }}>
+            {/*<div style={{ margin: '20px auto', fontSize: '32px', fontWeight: 'bold', minHeight: '45px' }}>
                 {selectedShop ? `${selectedShop.shopNm}${selectedShop.rmk ? '(' + selectedShop.rmk + ')' : ''}` : '랜덤뽑기🎲'}
+            </div>*/}
+            <div style={{ margin: '20px auto', minHeight: '45px' }}>
+                {selectedShop ? (
+                    <div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold' }}>
+                            {selectedShop.shopNm}{selectedShop.rmk ? '(' + selectedShop.rmk + ')' : ''}
+                        </div>
+                        {selectedShop.address && (
+                            <a href={`https://map.kakao.com/link/search/${encodeURIComponent(selectedShop.shopNm + ' ' + selectedShop.address)}`}
+                               target="_blank" rel="noopener noreferrer"
+                               style={{ fontSize: '14px', color: '#999', textDecoration: 'none' }}>
+                                📍 {selectedShop.address}
+                            </a>
+                        )}
+                    </div>
+                ) : (
+                    <div style={{ fontSize: '32px', fontWeight: 'bold' }}>랜덤뽑기🎲</div>
+                )}
             </div>
             {/* 필터 모드 선택 */}
             <div style={{ margin: '15px auto' }}>
