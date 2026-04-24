@@ -481,6 +481,16 @@ function App() {
                     ⭐
                 </button>
             )}
+            {selectedShop && (
+                <button onClick={handleShare} style={{
+                    padding: '15px 20px', fontSize: '20px',
+                    backgroundColor: '#FEE500', color: '#3C1E1E',
+                    border: 'none', borderRadius: '10px', cursor: 'pointer',
+                    marginBottom: '30px'
+                }}>
+                    💬
+                </button>
+            )}
             {/* 하단 로그인/사용자 영역 */}
             <div style={{ marginTop: '30px', paddingBottom: '30px' }}>
                 {localStorage.getItem('token') ? (
