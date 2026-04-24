@@ -408,6 +408,14 @@ function App() {
                         border: 'none', borderRadius: '8px', cursor: 'pointer'
                     }}
                 >🏢 랜드마크 기준</button>
+                {localStorage.getItem('token') && (
+                    <button onClick={() => setFavOnly(!favOnly)} style={{
+                        padding: '10px 20px', margin: '5px', fontSize: '16px',
+                        backgroundColor: favOnly ? '#FFD700' : '#e0e0e0',
+                        color: favOnly ? '#333' : '#333',
+                        border: 'none', borderRadius: '8px', cursor: 'pointer'
+                    }}>⭐</button>
+                )}
             </div>
 
             {/* 지하철 필터 */}
@@ -463,17 +471,6 @@ function App() {
             }}>
                 🎲 식당 선택!
             </button>
-            {/* 즐겨찾기만 뽑기 */}
-            {localStorage.getItem('token') && (
-                <button onClick={() => setFavOnly(!favOnly)} style={{
-                    padding: '15px 20px', fontSize: '20px',
-                    backgroundColor: favOnly ? '#FFD700' : '#e0e0e0',
-                    border: 'none', borderRadius: '10px', cursor: 'pointer',
-                    marginBottom: '10px'
-                }}>
-                    ⭐
-                </button>
-            )}
             {selectedShop && (
                 <button onClick={handleShare} style={{
                     padding: '15px 20px', fontSize: '20px',
