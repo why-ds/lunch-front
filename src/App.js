@@ -371,7 +371,7 @@ function App() {
             </div>
 
             {/* 즐겨찾기 / 블랙리스트 버튼 */}
-            {selectedShop && (
+            {/*{selectedShop && (
                 <div style={{ margin: '0 auto 15px', display: 'flex', justifyContent: 'center', gap: '15px' }}>
                     <button onClick={handleToggleFavorite} style={{
                         fontSize: '24px', background: 'none', border: 'none', cursor: 'pointer',
@@ -386,7 +386,7 @@ function App() {
                         🚫
                     </button>
                 </div>
-            )}
+            )}*/}
 
             {/* 필터 모드 선택 */}
             <div style={{ margin: '15px auto' }}>
