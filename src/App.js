@@ -373,7 +373,7 @@ function App() {
                 {selectedShop ? (
                     <div>
                         <div style={{ fontSize: '32px', fontWeight: 'bold' }}>
-                            {selectedShop.shopNm}{selectedShop.rmk ? '(' + selectedShop.rmk + ')' : ''}
+                            {selectedShop.shopNm}{/*{selectedShop.rmk ? '(' + selectedShop.rmk + ')' : ''}*/}
                         </div>
                         {selectedShop.address && (
                             <a href={`https://map.kakao.com/link/search/${encodeURIComponent(selectedShop.shopNm + ' ' + selectedShop.address)}`}
