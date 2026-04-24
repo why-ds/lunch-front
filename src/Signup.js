@@ -11,6 +11,8 @@ function Signup() {
     const [emailMessage, setEmailMessage] = useState('');
     const [agreed, setAgreed] = useState(false);
     const [error, setError] = useState('');
+    const [nickChecked, setNickChecked] = useState(false);
+    const [nickMessage, setNickMessage] = useState('');
 
     useEffect(() => {
         if (localStorage.getItem('token')) window.location.href = '/';
@@ -68,6 +70,8 @@ function Signup() {
         if (!form.nickname.trim()) { setError('닉네임을 입력해주세요.'); return; }
         if (!emailVerified) { setError('이메일 인증을 완료해주세요.'); return; }
         if (!agreed) { setError('개인정보 수집에 동의해주세요.'); return; }
+        if (!form.nickname.trim()) { setError('닉네임을 입력해주세요.'); return; }
+        if (!nickChecked) { setError('닉네임 중복확인을 해주세요.'); return; }
 
         try {
             const res = await fetch(API_BASE + '/api/auth/signup', {
@@ -88,6 +92,16 @@ function Signup() {
                 setError(result.message);
             }
         } catch (e) { setError('서버에 연결할 수 없습니다.'); }
+    };
+
+    const checkNickname = async () => {
+        if (!form.nickname.trim()) { setNickMessage('닉네임을 입력해주세요.'); return; }
+        try {
+            const res = await fetch(`${API_BASE}/api/auth/check-nickname?nickname=${encodeURIComponent(form.nickname)}`);
+            const data = await res.json();
+            setNickChecked(!data.exists);
+            setNickMessage(data.message);
+        } catch (e) { setNickMessage('확인 실패'); }
     };
 
     const inputStyle = { width: '100%', padding: '12px', marginBottom: '10px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '16px', boxSizing: 'border-box' };
@@ -113,8 +127,13 @@ function Signup() {
                        onChange={(e) => setForm({...form, passwordConfirm: e.target.value})} style={inputStyle} />
 
                 {/* 닉네임 */}
-                <input type="text" placeholder="닉네임" value={form.nickname}
-                       onChange={(e) => setForm({...form, nickname: e.target.value})} style={inputStyle} />
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '4px' }}>
+                    <input type="text" placeholder="닉네임" value={form.nickname}
+                           onChange={(e) => { setForm({...form, nickname: e.target.value}); setNickChecked(false); setNickMessage(''); }}
+                           style={{ ...inputStyle, flex: 1, marginBottom: 0 }} />
+                    <button type="button" onClick={checkNickname} style={btnSmall}>중복확인</button>
+                </div>
+                {nickMessage && <p style={{ fontSize: '13px', color: nickChecked ? 'green' : 'red', margin: '0 0 10px 0', textAlign: 'left' }}>{nickMessage}</p>}
 
                 {/* 이메일 인증 */}
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '4px' }}>
