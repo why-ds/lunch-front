@@ -121,7 +121,7 @@ function Signup() {
                 {idMessage && <p style={{ fontSize: '13px', color: idChecked ? 'green' : 'red', margin: '0 0 10px 0', textAlign: 'left' }}>{idMessage}</p>}
 
                 {/* 비밀번호 */}
-                <input type="password" placeholder="비밀번호 (8자 이상)" value={form.password}
+                <input type="password" placeholder="비밀번호 (8자 이상 대소문자/숫자/특수문자포함)" value={form.password}
                        onChange={(e) => setForm({...form, password: e.target.value})} style={inputStyle} />
                 <input type="password" placeholder="비밀번호 확인" value={form.passwordConfirm}
                        onChange={(e) => setForm({...form, passwordConfirm: e.target.value})} style={inputStyle} />
